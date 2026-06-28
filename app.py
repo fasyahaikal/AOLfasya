@@ -4,13 +4,17 @@ import pickle
 import gdown
 import os
 
-for file, file_id in {
+files = {
     "credit_model.pkl": "12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-",
-    "encoders.pkl": "ID_ENCODERS",
-    "target_encoder.pkl": "ID_TARGET"
-}.items():
-    if not os.path.exists(file):
-        gdown.download(id=file_id, output=file, quiet=False)
+    "encoders.pkl": "GANTI_INI_ID_ENCODERS",
+    "target_encoder.pkl": "GANTI_INI_ID_TARGET"
+}
+
+for filename, file_id in files.items():
+    if not os.path.exists(filename):
+        gdown.download(id=file_id, output=filename, quiet=False)
+
+model = pickle.load(open("credit_model.pkl", "rb"))
 encoders = pickle.load(open("encoders.pkl", "rb"))
 target_encoder = pickle.load(open("target_encoder.pkl", "rb"))
 
@@ -65,7 +69,6 @@ if st.button("Predict"):
         "Payment_Behaviour": [encoders["Payment_Behaviour"].transform([payment_behaviour])[0]],
         "Monthly_Balance": [balance]
     })
-
     prediction = model.predict(data)
     result = target_encoder.inverse_transform(prediction)
     st.success(f"Predicted Credit Score: {result[0]}")
