@@ -1,18 +1,16 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import boto3
+import gdown
 import os
 
-# Download model dari S3
-BUCKET = "aolfasya"
-s3 = boto3.client('s3', region_name='us-east-1')
-
-for file in ["credit_model.pkl", "encoders.pkl", "target_encoder.pkl"]:
+for file, file_id in {
+    "credit_model.pkl": "12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-",
+    "encoders.pkl": "ID_ENCODERS",
+    "target_encoder.pkl": "ID_TARGET"
+}.items():
     if not os.path.exists(file):
-        s3.download_file(BUCKET, file, file)
-
-model = pickle.load(open("credit_model.pkl", "rb"))
+        gdown.download(id=file_id, output=file, quiet=False)
 encoders = pickle.load(open("encoders.pkl", "rb"))
 target_encoder = pickle.load(open("target_encoder.pkl", "rb"))
 
