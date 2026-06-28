@@ -6,7 +6,7 @@ import gdown
 import os
 
 if not os.path.exists("credit_model.pkl"):
-    gdown.download("https://drive.google.com/drive/u/0/folders/1CgmMH4KmT_NUSst33jtR_cTHx4X7okIu", "credit_model.pkl", quiet=False)
+    gdown.download("https://drive.google.com/file/d/12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-/view?usp=sharing", "credit_model.pkl", quiet=False)
 
 model = pickle.load(open("credit_model.pkl", "rb"))
 encoders = pickle.load(open("encoders.pkl", "rb"))
