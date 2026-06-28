@@ -1,16 +1,31 @@
 import streamlit as st
 import pandas as pd
 import pickle
-import gdown
 import os
+import requests
+
+def download_from_gdrive(file_id, output):
+    session = requests.Session()
+    url = "https://drive.google.com/uc?export=download"
+    response = session.get(url, params={"id": file_id}, stream=True)
+    
+    # Handle virus scan warning untuk file besar
+    for key, value in response.cookies.items():
+        if key.startswith("download_warning"):
+            response = session.get(url, params={"id": file_id, "confirm": value}, stream=True)
+            break
+    
+    with open(output, "wb") as f:
+        for chunk in response.iter_content(32768):
+            if chunk:
+                f.write(chunk)
 
 if not os.path.exists("credit_model.pkl"):
-    gdown.download(id="12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-", output="credit_model.pkl", quiet=False)
+    download_from_gdrive("12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-", "credit_model.pkl")
 
 model = pickle.load(open("credit_model.pkl", "rb"))
 encoders = pickle.load(open("encoders.pkl", "rb"))
 target_encoder = pickle.load(open("target_encoder.pkl", "rb"))
-
 st.title("Credit Score Prediction")
 st.write("Masukkan data customer")
 
