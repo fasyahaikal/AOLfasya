@@ -4,15 +4,8 @@ import pickle
 import gdown
 import os
 
-files = {
-    "credit_model.pkl": "12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-",
-    "encoders.pkl": "GANTI_INI_ID_ENCODERS",
-    "target_encoder.pkl": "GANTI_INI_ID_TARGET"
-}
-
-for filename, file_id in files.items():
-    if not os.path.exists(filename):
-        gdown.download(id=file_id, output=filename, quiet=False)
+if not os.path.exists("credit_model.pkl"):
+    gdown.download(id="12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-", output="credit_model.pkl", quiet=False)
 
 model = pickle.load(open("credit_model.pkl", "rb"))
 encoders = pickle.load(open("encoders.pkl", "rb"))
