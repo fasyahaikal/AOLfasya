@@ -2,6 +2,12 @@ import streamlit as st
 import pandas as pd
 import pickle
 
+import gdown
+import os
+
+if not os.path.exists("credit_model.pkl"):
+    gdown.download("https://drive.google.com/drive/u/0/folders/1CgmMH4KmT_NUSst33jtR_cTHx4X7okIu", "credit_model.pkl", quiet=False)
+
 model = pickle.load(open("credit_model.pkl", "rb"))
 encoders = pickle.load(open("encoders.pkl", "rb"))
 target_encoder = pickle.load(open("target_encoder.pkl", "rb"))
