@@ -1,14 +1,16 @@
 import streamlit as st
 import pandas as pd
 import pickle
-
-import gdown
+import boto3
 import os
-import pickle
 
-if not os.path.exists("credit_model.pkl"):
-    url = "https://drive.google.com/uc?export=download&id=12fzLwWvEv_bFsKUhXzzpe1Of8C3YCPy-"
-    gdown.download(url, "credit_model.pkl", quiet=False, fuzzy=True)
+# Download model dari S3
+BUCKET = "aolfasya"
+s3 = boto3.client('s3', region_name='us-east-1')
+
+for file in ["credit_model.pkl", "encoders.pkl", "target_encoder.pkl"]:
+    if not os.path.exists(file):
+        s3.download_file(BUCKET, file, file)
 
 model = pickle.load(open("credit_model.pkl", "rb"))
 encoders = pickle.load(open("encoders.pkl", "rb"))
@@ -19,12 +21,7 @@ st.write("Masukkan data customer")
 
 month = st.selectbox("Month", encoders["Month"].classes_)
 age = st.number_input("Age", 18, 100, 30)
-
-occupation = st.selectbox(
-    "Occupation",
-    encoders["Occupation"].classes_
-)
-
+occupation = st.selectbox("Occupation", encoders["Occupation"].classes_)
 annual_income = st.number_input("Annual Income", value=50000.0)
 monthly_salary = st.number_input("Monthly Inhand Salary", value=4000.0)
 bank_account = st.number_input("Number of Bank Accounts", value=3)
@@ -35,29 +32,14 @@ delay = st.number_input("Delay From Due Date", value=5)
 delayed_payment = st.number_input("Number of Delayed Payments", value=2.0)
 changed_limit = st.number_input("Changed Credit Limit", value=10.0)
 credit_inquiries = st.number_input("Number of Credit Inquiries", value=2.0)
-
-credit_mix = st.selectbox(
-    "Credit Mix",
-    encoders["Credit_Mix"].classes_
-)
-
+credit_mix = st.selectbox("Credit Mix", encoders["Credit_Mix"].classes_)
 debt = st.number_input("Outstanding Debt", value=500.0)
 utilization = st.number_input("Credit Utilization Ratio", value=30.0)
 history = st.number_input("Credit History Age", value=120.0)
-
-payment_min = st.selectbox(
-    "Payment of Minimum Amount",
-    encoders["Payment_of_Min_Amount"].classes_
-)
-
+payment_min = st.selectbox("Payment of Minimum Amount", encoders["Payment_of_Min_Amount"].classes_)
 emi = st.number_input("Total EMI per Month", value=150.0)
 invest = st.number_input("Amount Invested Monthly", value=200.0)
-
-payment_behaviour = st.selectbox(
-    "Payment Behaviour",
-    encoders["Payment_Behaviour"].classes_
-)
-
+payment_behaviour = st.selectbox("Payment Behaviour", encoders["Payment_Behaviour"].classes_)
 balance = st.number_input("Monthly Balance", value=500.0)
 
 if st.button("Predict"):
@@ -88,5 +70,4 @@ if st.button("Predict"):
 
     prediction = model.predict(data)
     result = target_encoder.inverse_transform(prediction)
-
     st.success(f"Predicted Credit Score: {result[0]}")
